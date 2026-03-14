@@ -1,26 +1,313 @@
 @import "tailwindcss";
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
+body {
+  margin: 0;
+  color: #121212;
+  background: #f9f9f9;
+  font-family:
+    "Avenir Next",
+    "Segoe UI",
+    sans-serif;
 }
 
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+a {
+  text-decoration: none;
+  color: inherit;
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+.landing-wrap {
+  min-height: 100vh;
+  width: 100%;
+  padding: 0;
+  background: transparent;
+}
+
+.landing-card {
+  min-height: 100vh;
+  width: 100%;
+  background: transparent;
+}
+
+.landing-card-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  padding: 10px 22px 8px;
+  background: #fcfcfc;
+}
+
+.landing-card-head h1 {
+  margin: 0;
+  font-size: 41px;
+  font-weight: 900;
+  letter-spacing: 0.01em;
+}
+
+.landing-card-head a {
+  font-size: 13px;
+  font-weight: 700;
+}
+
+.hero {
+  margin: 0 14px;
+  padding: 66px 18px 0;
+  border-radius: 2px;
+  text-align: center;
+  background:
+    radial-gradient(85% 120% at 18% 100%, #7fb8cf 0%, transparent 56%),
+    radial-gradient(58% 76% at 82% 96%, #8ca6c6 0%, transparent 72%),
+    linear-gradient(150deg, #5d6788 0%, #75acc9 47%, #9ba7c2 100%);
+}
+
+.hero h2 {
+  margin: 0;
+  color: #f4f7fb;
+  font-size: 53px;
+  line-height: 1.15;
+  font-weight: 700;
+}
+
+.hero-actions {
+  margin-top: 24px;
+  display: flex;
+  justify-content: center;
+  gap: 8px;
+}
+
+.hero-btn {
+  border: 0;
+  padding: 6px 12px;
+  border-radius: 8px;
+  font-size: 11px;
+  font-weight: 700;
+}
+
+.hero-btn-light {
+  background: white;
+  color: #1c1c1c;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.16);
+}
+
+.hero-btn-ghost {
+  color: #f8f8f8;
+  background: transparent;
+}
+
+.hero-panel {
+  margin: 64px auto -26px;
+  width: min(90%, 620px);
+  aspect-ratio: 11/5;
+  border-radius: 16px 16px 0 0;
+  background:
+    linear-gradient(#dcdcdc, #dcdcdc) 0 0 / 100% 33% no-repeat,
+    linear-gradient(#ececec, #ececec) 18% 35% / 18% 57% no-repeat,
+    linear-gradient(#dedede, #dedede) 42% 35% / 20% 57% no-repeat,
+    linear-gradient(#ececec, #ececec) 72% 35% / 21% 57% no-repeat,
+    #e2e2e2;
+}
+
+.mission {
+  padding: 58px 20px 0;
+}
+
+.mission h3 {
+  margin: 0;
+  font-size: 44px;
+  font-weight: 700;
+}
+
+.mission p {
+  margin: 7px 0 18px;
+  color: #737373;
+  font-size: 12px;
+  font-weight: 500;
+}
+
+.mission button {
+  border: 0;
+  border-radius: 8px;
+  padding: 8px 13px;
+  background: #0d0d0d;
+  color: #fff;
+  font-size: 11px;
+  font-weight: 700;
+}
+
+.media-grid {
+  padding: 24px 20px 0;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 14px;
+}
+
+.media-box {
+  border-radius: 8px;
+  min-height: 116px;
+}
+
+.media-one {
+  background:
+    radial-gradient(120% 120% at 65% 0%, rgba(255, 255, 255, 0.85), transparent 42%),
+    radial-gradient(circle at 22% 72%, rgba(152, 195, 220, 0.68), transparent 44%),
+    repeating-radial-gradient(circle at 25% 60%, rgba(147, 194, 221, 0.26), rgba(147, 194, 221, 0.26) 1px, rgba(219, 238, 247, 0.7) 2px, rgba(219, 238, 247, 0.7) 3px),
+    #d2ebf7;
+}
+
+.media-two {
+  background:
+    radial-gradient(90% 90% at 32% 78%, #c7dfec 0%, transparent 65%),
+    radial-gradient(100% 80% at 74% 24%, #a09bad 0%, transparent 70%),
+    #d7e3ee;
+}
+
+.media-three {
+  background:
+    radial-gradient(140% 120% at 12% 12%, rgba(144, 189, 215, 0.72), transparent 40%),
+    repeating-radial-gradient(circle at 52% 44%, rgba(125, 173, 201, 0.6), rgba(125, 173, 201, 0.6) 1px, rgba(193, 224, 240, 0.66) 3px, rgba(193, 224, 240, 0.66) 4px),
+    #d7ecf7;
+}
+
+.media-four {
+  background:
+    radial-gradient(120% 100% at 22% 82%, rgba(153, 201, 225, 0.64), transparent 40%),
+    repeating-radial-gradient(circle at 60% 36%, rgba(130, 183, 212, 0.58), rgba(130, 183, 212, 0.58) 1px, rgba(201, 231, 245, 0.68) 3px, rgba(201, 231, 245, 0.68) 4px),
+    #d6edf8;
+}
+
+.testimonials {
+  padding: 70px 20px 0;
+}
+
+.testimonials h3 {
+  margin: 0;
+  font-size: 41px;
+  font-weight: 700;
+}
+
+.testimonials > p {
+  margin: 8px 0 18px;
+  color: #7d7d7d;
+  font-size: 13px;
+}
+
+.testimonial-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+}
+
+.quote-card {
+  border: 1px solid #e7e7e7;
+  background: #fcfcfc;
+  border-radius: 8px;
+  padding: 12px 11px;
+}
+
+.quote-head {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+}
+
+.quote-head strong {
+  display: block;
+  font-size: 10px;
+  font-weight: 700;
+}
+
+.quote-head small {
+  display: block;
+  margin-top: 1px;
+  font-size: 8px;
+  color: #888;
+}
+
+.quote-dot {
+  margin-top: 1px;
+  width: 12px;
+  height: 12px;
+  border-radius: 4px;
+  flex-shrink: 0;
+}
+
+.quote-green {
+  background: #edf8dc;
+  border: 1px solid #bfdfa2;
+}
+
+.quote-pink {
+  background: #ffe7f2;
+  border: 1px solid #efc5dc;
+}
+
+.quote-card p {
+  margin: 9px 0 0;
+  font-size: 10px;
+  font-weight: 700;
+  line-height: 1.35;
+}
+
+.landing-footer {
+  margin: 64px 14px 14px;
+  padding: 44px 32px;
+  display: grid;
+  gap: 30px;
+  grid-template-columns: 1.25fr 1fr 1fr 1fr 1fr;
+  background:
+    radial-gradient(74% 180% at 108% 104%, #80d3ee 0%, transparent 54%),
+    linear-gradient(120deg, #5f7e9f 0%, #4e7397 48%, #3f5a84 100%);
+  color: #d8e3ef;
+}
+
+.landing-footer h4 {
+  margin: 0;
+  font-size: 16px;
+  font-weight: 700;
+}
+
+.landing-footer h5 {
+  margin: 0 0 9px;
+  font-size: 10px;
+  font-weight: 700;
+  color: #e6eff8;
+}
+
+.landing-footer a {
+  display: block;
+  margin-top: 6px;
+  font-size: 9px;
+  color: #bdd1e4;
+}
+
+@media (max-width: 900px) {
+  .landing-card-head h1 {
+    font-size: 33px;
+  }
+
+  .hero h2 {
+    font-size: clamp(32px, 7vw, 48px);
+  }
+
+  .mission h3,
+  .testimonials h3 {
+    font-size: 34px;
   }
 }
 
-body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+@media (max-width: 720px) {
+  .testimonial-grid,
+  .media-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .landing-footer {
+    grid-template-columns: 1fr 1fr;
+    padding: 30px 20px;
+    gap: 22px;
+  }
+
+  .mission h3,
+  .testimonials h3 {
+    font-size: 30px;
+  }
 }

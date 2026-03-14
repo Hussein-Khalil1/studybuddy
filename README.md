@@ -1,5 +1,33 @@
 This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
 
+## Supabase Setup
+
+This project is wired for Supabase using:
+- `lib/supabase/client.ts` for browser/client components
+- `lib/supabase/server.ts` for server components/actions
+- `middleware.ts` + `lib/supabase/middleware.ts` for auth session refresh
+
+Set these in `.env.local` (from Supabase Dashboard -> Project Settings -> API):
+
+```bash
+NEXT_PUBLIC_SUPABASE_URL=your_project_url
+NEXT_PUBLIC_SUPABASE_ANON_KEY=your_anon_key
+```
+
+### Profile Storage Protocol (Required)
+
+Auth users are created in `auth.users` by Supabase. This app also upserts a row in
+`public.profiles` on every successful sign-up/sign-in.
+
+Run this SQL in Supabase SQL Editor:
+
+`supabase/migrations/20260312013000_create_profiles_table.sql`
+
+That migration creates:
+- `public.profiles` keyed by `auth.users.id`
+- RLS policies so authenticated users can only read/write their own row
+- timestamps for account creation and latest sign-in sync
+
 ## Getting Started
 
 First, run the development server:
