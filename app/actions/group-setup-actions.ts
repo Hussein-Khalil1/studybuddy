@@ -7,8 +7,6 @@ import { triggerCourseEvent } from "@/lib/pusher/server";
 type ActionResult = {
   ok: boolean;
   error?: string;
-  groupId?: number;
-  courseId?: number;
 };
 
 type InviteRequestRow = {
@@ -183,6 +181,7 @@ export async function sendGroupInviteAction(input: {
 
     revalidatePath("/dashboard");
     revalidatePath(`/dashboard/course/${input.courseId}`);
+    revalidatePath("/group-setup");
 
     await triggerCourseEvent({
       type: "invite.sent",
@@ -300,6 +299,7 @@ export async function requestToJoinGroupAction(input: {
 
     revalidatePath("/dashboard");
     revalidatePath(`/dashboard/course/${input.courseId}`);
+    revalidatePath("/group-setup");
 
     await triggerCourseEvent({
       type: "invite.sent",
@@ -363,8 +363,8 @@ export async function respondToGroupInviteAction(input: {
       }
 
       revalidatePath("/dashboard");
-      revalidatePath("/dashboard/notifications");
       revalidatePath(`/dashboard/course/${input.courseId}`);
+      revalidatePath("/group-setup");
 
       await triggerCourseEvent({
         type: "invite.declined",
@@ -445,8 +445,8 @@ export async function respondToGroupInviteAction(input: {
     const updatedMemberCount = (currentMemberCount ?? 0) + 1;
 
     revalidatePath("/dashboard");
-    revalidatePath("/dashboard/notifications");
     revalidatePath(`/dashboard/course/${input.courseId}`);
+    revalidatePath("/group-setup");
 
     await triggerCourseEvent({
       type: "invite.accepted",
@@ -465,7 +465,7 @@ export async function respondToGroupInviteAction(input: {
       memberCount: updatedMemberCount,
     });
 
-    return { ok: true, groupId: requestRow.target_group_id, courseId: input.courseId };
+    return { ok: true };
   } catch (error) {
     return { ok: false, error: asMessage(error) };
   }

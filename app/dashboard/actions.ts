@@ -20,7 +20,7 @@ export async function signOutAction() {
 
     await supabase.auth.signOut();
   } finally {
-    redirect("/auth");
+    redirect("/");
   }
 }
 

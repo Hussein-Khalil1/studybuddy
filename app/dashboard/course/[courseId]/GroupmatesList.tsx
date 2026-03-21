@@ -1,12 +1,18 @@
 import { createClient } from "@/lib/supabase/server";
 import { InviteToGroupButton } from "./InviteToGroupButton";
 
+type UsernameProfile = { username: string };
+
 type ClassmateQueryRow = {
   user_id: string;
-  profiles: {
-    username: string;
-  }[];
+  profiles: UsernameProfile | UsernameProfile[];
 };
+
+function pickUsername(p: UsernameProfile | UsernameProfile[] | null | undefined): string {
+  if (!p) return "Student";
+  const profile = Array.isArray(p) ? p[0] : p;
+  return profile?.username?.trim() || "Student";
+}
 
 type GroupMembershipRow = {
   user_id: string;
@@ -63,8 +69,7 @@ export async function GroupmatesList({
 
   const classmates = (classmatesRaw ?? [])
     .map((row) => {
-      const profile = row.profiles?.[0];
-      const username = profile?.username?.trim() || "Student";
+      const username = pickUsername(row.profiles);
       const classmateGroupId = groupByUserId.get(row.user_id) ?? null;
 
       return {

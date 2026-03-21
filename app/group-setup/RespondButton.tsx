@@ -5,7 +5,7 @@ import { respondToGroupInviteAction } from "@/app/actions/group-setup-actions";
 
 type DecisionState = "pending" | "accepted" | "declined";
 
-export function InviteResponseButtons({
+export function RespondButton({
   courseId,
   requestId,
 }: {
@@ -20,20 +20,11 @@ export function InviteResponseButtons({
   );
 
   function onRespond(decision: "accept" | "decline") {
-    if (optimisticState !== "pending" || isPending) {
-      return;
-    }
-
+    if (optimisticState !== "pending" || isPending) return;
     setError(null);
-
     startTransition(async () => {
       setOptimisticState(decision === "accept" ? "accepted" : "declined");
-      const result = await respondToGroupInviteAction({
-        courseId,
-        requestId,
-        decision,
-      });
-
+      const result = await respondToGroupInviteAction({ courseId, requestId, decision });
       if (!result.ok) {
         setOptimisticState("pending");
         setError(result.error ?? "Unable to update invite.");
@@ -51,12 +42,12 @@ export function InviteResponseButtons({
 
   return (
     <div>
-      <div className="flex flex-wrap gap-2">
+      <div className="flex gap-2">
         <button
           type="button"
           disabled={isPending}
           onClick={() => onRespond("accept")}
-          className="rounded-lg bg-emerald-600 px-3 py-1.5 text-xs font-semibold text-white transition hover:bg-emerald-700 disabled:cursor-not-allowed disabled:opacity-60"
+          className="rounded-lg bg-emerald-600 px-3 py-1.5 text-xs font-semibold text-white transition hover:bg-emerald-700 disabled:opacity-60"
         >
           Accept
         </button>
@@ -64,7 +55,7 @@ export function InviteResponseButtons({
           type="button"
           disabled={isPending}
           onClick={() => onRespond("decline")}
-          className="rounded-lg border border-slate-300 px-3 py-1.5 text-xs font-semibold text-slate-700 transition hover:bg-slate-100 disabled:cursor-not-allowed disabled:opacity-60"
+          className="rounded-lg border border-slate-300 px-3 py-1.5 text-xs font-semibold text-slate-700 transition hover:bg-slate-100 disabled:opacity-60"
         >
           Decline
         </button>

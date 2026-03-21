@@ -3,7 +3,7 @@
 import { useOptimistic, useState, useTransition } from "react";
 import { sendGroupInviteAction } from "@/app/actions/group-setup-actions";
 
-export function InviteToGroupButton({
+export function InviteButton({
   courseId,
   targetUserId,
   initiallyPending,
@@ -22,15 +22,11 @@ export function InviteToGroupButton({
   );
 
   function onInvite() {
-    if (disabled || optimisticPending || isPending) {
-      return;
-    }
-
+    if (disabled || optimisticPending || isPending) return;
     setError(null);
     startTransition(async () => {
       setOptimisticPending(true);
       const result = await sendGroupInviteAction({ courseId, targetUserId });
-
       if (!result.ok) {
         setOptimisticPending(false);
         setError(result.error ?? "Unable to send invite.");
@@ -46,9 +42,15 @@ export function InviteToGroupButton({
         type="button"
         disabled={isDisabled}
         onClick={onInvite}
-        className="rounded-lg border border-slate-300 bg-white px-4 py-2 text-sm font-medium text-slate-700 transition hover:bg-slate-100 disabled:cursor-not-allowed disabled:opacity-60"
+        className="rounded-lg border border-slate-300 bg-white px-3 py-1.5 text-xs font-medium text-slate-700 transition hover:bg-slate-100 disabled:cursor-not-allowed disabled:opacity-60"
       >
-        {disabled ? "Group Full" : optimisticPending ? "Invite sent" : isPending ? "Sending..." : "Invite to group"}
+        {disabled
+          ? "Group Full"
+          : optimisticPending
+            ? "Invite sent"
+            : isPending
+              ? "Sending..."
+              : "Invite"}
       </button>
       {error ? <p className="mt-1 text-xs text-rose-600">{error}</p> : null}
     </div>

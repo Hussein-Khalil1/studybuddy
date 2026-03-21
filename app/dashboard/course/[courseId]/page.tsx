@@ -14,12 +14,12 @@ type CourseRow = {
   campus: string;
 };
 
+type UsernameProfile = { username: string };
+
 type GroupMembershipRow = {
   user_id: string;
   group_id: number;
-  profiles: {
-    username: string;
-  }[];
+  profiles: UsernameProfile | UsernameProfile[];
 };
 
 type InviteRow = {
@@ -27,9 +27,15 @@ type InviteRow = {
   requester_user_id: string;
   target_user_id: string;
   status: "pending" | "accepted" | "declined" | "cancelled";
-  requester: { username: string }[];
-  target: { username: string }[];
+  requester: UsernameProfile | UsernameProfile[];
+  target: UsernameProfile | UsernameProfile[];
 };
+
+function pickUsername(p: UsernameProfile | UsernameProfile[] | null | undefined): string {
+  if (!p) return "Student";
+  const profile = Array.isArray(p) ? p[0] : p;
+  return profile?.username?.trim() || "Student";
+}
 
 function parseCourseId(value: string) {
   const parsed = Number.parseInt(value, 10);
@@ -109,7 +115,7 @@ export default async function CourseDashboardPage({
   const currentGroupMembers = currentGroupId
     ? memberships
         .filter((membership) => membership.group_id === currentGroupId)
-        .map((membership) => membership.profiles?.[0]?.username?.trim() || "Student")
+        .map((membership) => pickUsername(membership.profiles))
         .sort((a, b) => a.localeCompare(b))
     : [];
 
@@ -212,7 +218,7 @@ export default async function CourseDashboardPage({
                       (receivedRaw ?? []).map((invite) => (
                         <div key={invite.id} className="rounded-lg border border-slate-200 bg-white p-3">
                           <p className="text-sm text-slate-700">
-                            {invite.requester?.[0]?.username?.trim() || "Student"} invited you.
+                            {pickUsername(invite.requester)} invited you.
                           </p>
                           <div className="mt-2">
                             <InviteResponseButtons courseId={courseId} requestId={invite.id} />
@@ -232,7 +238,7 @@ export default async function CourseDashboardPage({
                       (sentRaw ?? []).map((invite) => (
                         <div key={invite.id} className="rounded-lg border border-slate-200 bg-white p-3">
                           <p className="text-sm text-slate-700">
-                            Invite sent to {invite.target?.[0]?.username?.trim() || "Student"}.
+                            Invite sent to {pickUsername(invite.target)}.
                           </p>
                           <p className="mt-1 text-xs text-slate-500">Waiting for response.</p>
                         </div>

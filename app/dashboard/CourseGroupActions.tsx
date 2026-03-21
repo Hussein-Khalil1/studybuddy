@@ -1,7 +1,7 @@
 "use client";
 
 import { useMemo, useState, useTransition } from "react";
-import { requestToJoinGroupAction, sendGroupInviteAction } from "./course/[courseId]/group-setup-actions";
+import { requestToJoinGroupAction, sendGroupInviteAction } from "@/app/actions/group-setup-actions";
 
 type ClassmateOption = {
   id: string;
@@ -115,7 +115,7 @@ export function CourseGroupActions({
           type="button"
           onClick={onInviteToGroup}
           disabled={!selectedClassmate || selectedClassmate.hasGroup || selectedHasPending || isPending}
-          className="rounded-lg bg-slate-900 px-3 py-2 text-xs font-semibold text-white transition hover:bg-slate-800 disabled:cursor-not-allowed disabled:opacity-60"
+          className="rounded-lg bg-sky-600 px-3 py-2 text-xs font-semibold text-white transition hover:bg-sky-700 disabled:cursor-not-allowed disabled:opacity-60"
         >
           {selectedHasPending ? "Request sent" : isPending ? "Sending..." : "Invite to group"}
         </button>

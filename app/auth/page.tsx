@@ -40,7 +40,7 @@ export default async function AuthPage({ searchParams }: AuthPageProps) {
   const initialTab = params?.tab === "signup" ? "signup" : "signin";
 
   return (
-    <main className="min-h-screen bg-slate-100 p-6 sm:p-10">
+    <main className="min-h-screen bg-[#f8f6f4] flex items-center justify-center p-6 sm:p-10">
       <AuthForm initialTab={initialTab} />
     </main>
   );

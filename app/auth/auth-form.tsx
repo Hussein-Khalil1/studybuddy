@@ -2,6 +2,8 @@
 
 import { FormEvent, useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
+import Link from "next/link";
+import Image from "next/image";
 import { createClient } from "@/lib/supabase/client";
 import type { SupabaseClient } from "@supabase/supabase-js";
 
@@ -182,11 +184,27 @@ export function AuthForm({ initialTab }: { initialTab: AuthTab }) {
   }
 
   return (
-    <section className="mx-auto w-full max-w-md rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
-      <h1 className="text-2xl font-semibold text-slate-900">StudyBuddy</h1>
-      <p className="mt-1 text-sm text-slate-600">{heading}</p>
+    <div className="relative w-full">
+      <div className="fixed top-6 left-6 z-50">
+      <Link
+        href="/"
+        className="bg-white text-center w-32 rounded-xl h-9 relative text-black text-xs font-medium tracking-wide group flex items-center active:scale-95 transition-transform"
+      >
+        <div className="bg-[#c2708a] rounded-lg h-7 w-1/4 flex items-center justify-center absolute left-1 top-[4px] group-hover:w-[116px] z-10 transition-all duration-500">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1024 1024" height="14px" width="14px">
+            <path d="M224 480h640a32 32 0 1 1 0 64H224a32 32 0 0 1 0-64z" fill="#ffffff" />
+            <path d="m237.248 512 265.408 265.344a32 32 0 0 1-45.312 45.312l-288-288a32 32 0 0 1 0-45.312l288-288a32 32 0 1 1 45.312 45.312L237.248 512z" fill="#ffffff" />
+          </svg>
+        </div>
+        <p className="translate-x-2 w-full text-center">Go Back</p>
+      </Link>
+      </div>
 
-      <div className="mt-6 grid grid-cols-2 rounded-lg bg-slate-100 p-1">
+      <section className="mx-auto w-full max-w-md rounded-2xl border border-[rgba(0,0,0,0.07)] bg-white p-6 shadow-sm">
+      <Image src="/logo.png" alt="StudyBuddy" width={140} height={36} style={{ height: "36px", width: "auto" }} priority />
+      <p className="mt-2 text-sm text-[rgba(42,32,40,0.55)]">{heading}</p>
+
+      <div className="mt-6 grid grid-cols-2 rounded-lg bg-[#f2eeec] p-1">
         <button
           type="button"
           onClick={() => {
@@ -195,8 +213,8 @@ export function AuthForm({ initialTab }: { initialTab: AuthTab }) {
           }}
           className={`rounded-md px-3 py-2 text-sm font-medium transition ${
             tab === "signin"
-              ? "bg-white text-slate-900 shadow-sm"
-              : "text-slate-600"
+              ? "bg-white text-[#2a2028] shadow-sm"
+              : "text-[rgba(42,32,40,0.55)]"
           }`}
         >
           Sign In
@@ -209,121 +227,129 @@ export function AuthForm({ initialTab }: { initialTab: AuthTab }) {
           }}
           className={`rounded-md px-3 py-2 text-sm font-medium transition ${
             tab === "signup"
-              ? "bg-white text-slate-900 shadow-sm"
-              : "text-slate-600"
+              ? "bg-white text-[#2a2028] shadow-sm"
+              : "text-[rgba(42,32,40,0.55)]"
           }`}
         >
           Sign Up
         </button>
       </div>
 
-      {tab === "signin" ? (
-        <form className="mt-5 space-y-4" onSubmit={handleSignIn}>
-          <label className="block">
-            <span className="mb-1 block text-sm font-medium text-slate-700">
-              Email
-            </span>
-            <input
-              type="email"
-              value={email}
-              onChange={(event) => setEmail(event.target.value)}
-              autoComplete="email"
-              required
-              className="w-full rounded-lg border border-slate-300 px-3 py-2 text-slate-900 outline-none ring-0 transition focus:border-slate-500"
-            />
-          </label>
+      <div className="mt-5 overflow-hidden">
+        <div
+          className="flex transition-transform duration-300 ease-in-out"
+          style={{ transform: tab === "signin" ? "translateX(0)" : "translateX(-50%)", width: "200%" }}
+        >
+          {/* Sign In form */}
+          <form className="w-1/2 min-w-0 shrink-0 space-y-4" onSubmit={handleSignIn}>
+            <label className="block">
+              <span className="mb-1 block text-sm font-medium text-[#2a2028]">
+                Email
+              </span>
+              <input
+                type="email"
+                value={email}
+                onChange={(event) => setEmail(event.target.value)}
+                autoComplete="email"
+                required
+                className="w-full rounded-lg border border-[rgba(0,0,0,0.12)] px-3 py-2 text-[#2a2028] outline-none ring-0 transition focus:border-[#c2708a]"
+              />
+            </label>
 
-          <label className="block">
-            <span className="mb-1 block text-sm font-medium text-slate-700">
-              Password
-            </span>
-            <input
-              type="password"
-              value={password}
-              onChange={(event) => setPassword(event.target.value)}
-              autoComplete="current-password"
-              required
-              minLength={8}
-              className="w-full rounded-lg border border-slate-300 px-3 py-2 text-slate-900 outline-none ring-0 transition focus:border-slate-500"
-            />
-          </label>
+            <label className="block">
+              <span className="mb-1 block text-sm font-medium text-[#2a2028]">
+                Password
+              </span>
+              <input
+                type="password"
+                value={password}
+                onChange={(event) => setPassword(event.target.value)}
+                autoComplete="current-password"
+                required
+                minLength={8}
+                className="w-full rounded-lg border border-[rgba(0,0,0,0.12)] px-3 py-2 text-[#2a2028] outline-none ring-0 transition focus:border-[#c2708a]"
+              />
+            </label>
 
-          {message ? (
-            <p className="text-sm text-rose-600" role="alert">
-              {message}
-            </p>
-          ) : null}
+            {message && tab === "signin" ? (
+              <p className="text-sm text-rose-600" role="alert">
+                {message}
+              </p>
+            ) : null}
 
-          <button
-            type="submit"
-            disabled={loading}
-            className="w-full rounded-lg bg-slate-900 px-4 py-2.5 text-sm font-medium text-white transition hover:bg-slate-800 disabled:cursor-not-allowed disabled:bg-slate-400"
-          >
-            {loading ? "Signing in..." : "Sign In"}
-          </button>
-        </form>
-      ) : (
-        <form className="mt-5 space-y-4" onSubmit={handleSignUp}>
-          <label className="block">
-            <span className="mb-1 block text-sm font-medium text-slate-700">
-              Username
-            </span>
-            <input
-              type="text"
-              value={username}
-              onChange={(event) => setUsername(event.target.value)}
-              autoComplete="username"
-              required
-              minLength={3}
-              maxLength={32}
-              className="w-full rounded-lg border border-slate-300 px-3 py-2 text-slate-900 outline-none ring-0 transition focus:border-slate-500"
-            />
-          </label>
+            <button
+              type="submit"
+              disabled={loading}
+              className="w-full rounded-lg bg-gradient-to-r from-[#c2708a] to-[#9b6ba5] px-4 py-2.5 text-sm font-medium text-white transition hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-50"
+            >
+              {loading ? "Signing in..." : "Sign In"}
+            </button>
+          </form>
 
-          <label className="block">
-            <span className="mb-1 block text-sm font-medium text-slate-700">
-              Email
-            </span>
-            <input
-              type="email"
-              value={email}
-              onChange={(event) => setEmail(event.target.value)}
-              autoComplete="email"
-              required
-              className="w-full rounded-lg border border-slate-300 px-3 py-2 text-slate-900 outline-none ring-0 transition focus:border-slate-500"
-            />
-          </label>
+          {/* Sign Up form */}
+          <form className="w-1/2 min-w-0 shrink-0 space-y-4" onSubmit={handleSignUp}>
+            <label className="block">
+              <span className="mb-1 block text-sm font-medium text-[#2a2028]">
+                Username
+              </span>
+              <input
+                type="text"
+                value={username}
+                onChange={(event) => setUsername(event.target.value)}
+                autoComplete="username"
+                required
+                minLength={3}
+                maxLength={32}
+                className="w-full rounded-lg border border-[rgba(0,0,0,0.12)] px-3 py-2 text-[#2a2028] outline-none ring-0 transition focus:border-[#c2708a]"
+              />
+            </label>
 
-          <label className="block">
-            <span className="mb-1 block text-sm font-medium text-slate-700">
-              Password
-            </span>
-            <input
-              type="password"
-              value={password}
-              onChange={(event) => setPassword(event.target.value)}
-              autoComplete="new-password"
-              required
-              minLength={8}
-              className="w-full rounded-lg border border-slate-300 px-3 py-2 text-slate-900 outline-none ring-0 transition focus:border-slate-500"
-            />
-          </label>
+            <label className="block">
+              <span className="mb-1 block text-sm font-medium text-[#2a2028]">
+                Email
+              </span>
+              <input
+                type="email"
+                value={email}
+                onChange={(event) => setEmail(event.target.value)}
+                autoComplete="email"
+                required
+                className="w-full rounded-lg border border-[rgba(0,0,0,0.12)] px-3 py-2 text-[#2a2028] outline-none ring-0 transition focus:border-[#c2708a]"
+              />
+            </label>
 
-          {message ? (
-            <p className="text-sm text-rose-600" role="alert">
-              {message}
-            </p>
-          ) : null}
+            <label className="block">
+              <span className="mb-1 block text-sm font-medium text-[#2a2028]">
+                Password
+              </span>
+              <input
+                type="password"
+                value={password}
+                onChange={(event) => setPassword(event.target.value)}
+                autoComplete="new-password"
+                required
+                minLength={8}
+                className="w-full rounded-lg border border-[rgba(0,0,0,0.12)] px-3 py-2 text-[#2a2028] outline-none ring-0 transition focus:border-[#c2708a]"
+              />
+            </label>
 
-          <button
-            type="submit"
-            disabled={loading}
-            className="w-full rounded-lg bg-slate-900 px-4 py-2.5 text-sm font-medium text-white transition hover:bg-slate-800 disabled:cursor-not-allowed disabled:bg-slate-400"
-          >
-            {loading ? "Creating account..." : "Create Account"}
-          </button>
-        </form>
-      )}
+            {message && tab === "signup" ? (
+              <p className="text-sm text-rose-600" role="alert">
+                {message}
+              </p>
+            ) : null}
+
+            <button
+              type="submit"
+              disabled={loading}
+              className="w-full rounded-lg bg-gradient-to-r from-[#c2708a] to-[#9b6ba5] px-4 py-2.5 text-sm font-medium text-white transition hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-50"
+            >
+              {loading ? "Creating account..." : "Create Account"}
+            </button>
+          </form>
+        </div>
+      </div>
     </section>
+    </div>
   );
 }

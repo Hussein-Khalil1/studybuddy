@@ -67,5 +67,5 @@ export async function saveOnboardingCoursesAction(
     return { error: profileError.message || "Unable to complete onboarding. Please try again." };
   }
 
-  redirect("/dashboard?startGroups=1");
+  redirect("/group-setup");
 }
