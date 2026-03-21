@@ -1,5 +1,6 @@
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
+import { PrivacyToggle } from "./PrivacyToggle";
 
 export default async function SettingsPage() {
   const supabase = await createClient();
@@ -11,11 +12,12 @@ export default async function SettingsPage() {
 
   const { data: profile } = await supabase
     .from("profiles")
-    .select("username")
+    .select("username, show_points")
     .eq("id", user.id)
-    .maybeSingle<{ username: string }>();
+    .maybeSingle<{ username: string; show_points: boolean }>();
 
   const currentUsername = profile?.username?.trim() || user.email?.split("@")[0] || "Student";
+  const showPoints = profile?.show_points ?? true;
 
   return (
     <div className="p-6 sm:p-8 max-w-2xl mx-auto">
@@ -80,6 +82,15 @@ export default async function SettingsPage() {
             Save Changes
           </button>
         </form>
+      </div>
+
+      {/* Privacy */}
+      <div className="bg-white rounded-2xl border border-[rgba(0,0,0,0.07)] p-6 shadow-sm mb-6">
+        <h2 className="text-base font-semibold text-[#2a2028] mb-1">Privacy</h2>
+        <p className="text-xs text-[rgba(42,32,40,0.45)] mb-5">
+          Control what group members can see on your profile.
+        </p>
+        <PrivacyToggle initialValue={showPoints} />
       </div>
 
       {/* Notifications stub */}

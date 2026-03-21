@@ -121,13 +121,14 @@ export default async function GroupPage({
         <div className="flex items-center gap-2 shrink-0">
           <div className="flex -space-x-1.5">
             {sortedMembers.slice(0, 4).map((member, idx) => (
-              <div
+              <Link
                 key={member.id}
+                href={member.id === user.id ? "/dashboard/profile" : `/dashboard/profile/${member.id}`}
                 title={member.id === user.id ? `${member.username} (you)` : member.username}
-                className={`w-7 h-7 rounded-full ${AVATAR_COLORS[idx % AVATAR_COLORS.length]} text-white flex items-center justify-center text-xs font-bold border-2 border-white`}
+                className={`w-7 h-7 rounded-full ${AVATAR_COLORS[idx % AVATAR_COLORS.length]} text-white flex items-center justify-center text-xs font-bold border-2 border-white hover:opacity-80 transition-opacity`}
               >
                 {member.username.charAt(0).toUpperCase()}
-              </div>
+              </Link>
             ))}
             {sortedMembers.length > 4 && (
               <div className="w-7 h-7 rounded-full bg-[rgba(42,32,40,0.1)] text-[#2a2028] flex items-center justify-center text-xs font-bold border-2 border-white">

@@ -140,14 +140,6 @@ export function ChatBox({
     if (!trimmed || isPending) return;
 
     setError(null);
-    const optimisticMsg: Message = {
-      id: Date.now(), // temporary
-      user_id: currentUserId,
-      content: trimmed,
-      created_at: new Date().toISOString(),
-    };
-
-    setMessages((prev) => [...prev, optimisticMsg]);
     setText("");
     if (textareaRef.current) {
       textareaRef.current.style.height = "auto";
@@ -156,7 +148,6 @@ export function ChatBox({
     startTransition(async () => {
       const result = await sendMessageAction({ groupId, content: trimmed });
       if (!result.ok) {
-        setMessages((prev) => prev.filter((m) => m.id !== optimisticMsg.id));
         setText(trimmed);
         setError(result.error ?? "Failed to send.");
       }
