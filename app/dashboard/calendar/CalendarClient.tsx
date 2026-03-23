@@ -7,6 +7,9 @@ export type CalendarAssignment = {
   title: string;
   due_date: string | null;
   course_code: string;
+  event_type: string;
+  prep_date: string | null;
+  is_flagged: boolean;
 };
 
 const DAY_LABELS = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
@@ -222,14 +225,23 @@ export function CalendarClient({ assignments }: { assignments: CalendarAssignmen
                       : "bg-gradient-to-b from-[#c2708a] to-[#9b6ba5]"
                     }`}/>
                     <div className="flex-1 min-w-0">
-                      <p className="text-sm font-semibold text-[#2a2028]">{a.title}</p>
-                      <div className="flex items-center gap-2 mt-1">
+                      <div className="flex items-center gap-1.5 flex-wrap mb-0.5">
                         <span className="text-[11px] font-bold text-[#c2708a] bg-[rgba(194,112,138,0.1)] px-2 py-0.5 rounded-full">
                           {a.course_code}
                         </span>
+                        {a.event_type !== "assignment" && (
+                          <span className="text-[11px] font-medium text-[rgba(42,32,40,0.5)] capitalize">{a.event_type}</span>
+                        )}
                         {status==="overdue" && <span className="text-[11px] font-semibold text-red-500">Overdue</span>}
                         {status==="soon"    && <span className="text-[11px] font-semibold text-amber-600">Due soon</span>}
+                        {a.is_flagged      && <span className="text-[11px] text-orange-500">⚑ Review date</span>}
                       </div>
+                      <p className="text-sm font-semibold text-[#2a2028]">{a.title}</p>
+                      {a.prep_date && (
+                        <p className="text-[10px] text-[rgba(42,32,40,0.4)] mt-0.5">
+                          Prep by {new Date(a.prep_date+"T00:00:00").toLocaleDateString("en-US",{weekday:"short",month:"short",day:"numeric"})}
+                        </p>
+                      )}
                     </div>
                   </div>
                 );

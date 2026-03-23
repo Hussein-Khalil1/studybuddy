@@ -2,6 +2,7 @@ import Link from "next/link";
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import { ChatBox } from "./ChatBox";
+import { SyllabusBar } from "./SyllabusBar";
 
 type MemberRow = {
   user_id: string;
@@ -47,7 +48,7 @@ export default async function GroupPage({
 
   if (!user) redirect("/auth");
 
-  const [{ data: enrollment }, { data: myMembership }, { data: course }, { data: membersRaw }, { data: messagesRaw }] =
+  const [{ data: enrollment }, { data: myMembership }, { data: course }, { data: membersRaw }, { data: messagesRaw }, { data: syllabusRaw }] =
     await Promise.all([
       supabase
         .from("course_enrollments")
@@ -76,6 +77,11 @@ export default async function GroupPage({
         .order("created_at", { ascending: true })
         .limit(200)
         .returns<MessageRow[]>(),
+      supabase
+        .from("syllabi")
+        .select("file_name, events_extracted, created_at, profiles!syllabi_uploaded_by_fkey(username)")
+        .eq("group_id", groupId)
+        .maybeSingle(),
     ]);
 
   if (!enrollment || !myMembership || !course) {
@@ -86,6 +92,22 @@ export default async function GroupPage({
     id: member.user_id,
     username: member.profiles?.username?.trim() || "Student",
   }));
+
+  const syllabusData = syllabusRaw as {
+    file_name: string;
+    events_extracted: number;
+    created_at: string;
+    profiles: { username: string } | null;
+  } | null;
+
+  const existingSyllabus = syllabusData
+    ? {
+        fileName:        syllabusData.file_name,
+        eventsExtracted: syllabusData.events_extracted,
+        uploadedAt:      syllabusData.created_at,
+        uploaderName:    syllabusData.profiles?.username ?? "a member",
+      }
+    : null;
 
   const sortedMembers = [...members].sort((a, b) => a.username.localeCompare(b.username));
 
@@ -141,6 +163,9 @@ export default async function GroupPage({
           </span>
         </div>
       </header>
+
+      {/* Syllabus bar */}
+      <SyllabusBar groupId={groupId} courseId={courseId} existing={existingSyllabus} />
 
       {/* Chat — fills remaining height */}
       <ChatBox

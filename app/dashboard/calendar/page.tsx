@@ -4,7 +4,7 @@ import { CalendarClient } from "./CalendarClient";
 
 type MembershipRow = { group_id: number; course_id: number };
 type CourseRow     = { id: number; code: string };
-type AssignmentRow = { id: number; title: string; due_date: string | null; course_id: number; group_id: number };
+type AssignmentRow = { id: number; title: string; due_date: string | null; course_id: number; group_id: number; event_type?: string; prep_date?: string | null; is_flagged?: boolean };
 
 export default async function CalendarPage() {
   const supabase = await createClient();
@@ -33,12 +33,12 @@ export default async function CalendarPage() {
 
   const groupIds = myGroups.map((g) => g.group_id);
 
-  let assignments: { id: number; title: string; due_date: string | null; course_code: string }[] = [];
+  let assignments: import("./CalendarClient").CalendarAssignment[] = [];
 
   if (groupIds.length > 0) {
     const { data: rows } = await supabase
       .from("assignments")
-      .select("id, title, due_date, course_id, group_id")
+      .select("id, title, due_date, course_id, group_id, event_type, prep_date, is_flagged")
       .in("group_id", groupIds)
       .order("due_date", { ascending: true, nullsFirst: false })
       .returns<AssignmentRow[]>();
@@ -48,6 +48,9 @@ export default async function CalendarPage() {
       title:       a.title,
       due_date:    a.due_date,
       course_code: myGroups.find((g) => g.group_id === a.group_id)?.course_code ?? "",
+      event_type:  a.event_type ?? "assignment",
+      prep_date:   a.prep_date ?? null,
+      is_flagged:  a.is_flagged ?? false,
     }));
   }
 
