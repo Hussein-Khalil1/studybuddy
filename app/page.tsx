@@ -269,7 +269,7 @@ export default function Home() {
         <div className={styles.heroBg}></div>
         <div className={styles.heroBadge}>
           <span className={styles.badgeDot}></span>
-          Now open for UofT students · Beta 2025
+          Now open for UofT students 
         </div>
         <h1 className={styles.heroH1}>
           Study smarter,

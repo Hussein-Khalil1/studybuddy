@@ -1,0 +1,293 @@
+============================================================
+         SPRINT PLAN: STUDYBUDDY
+============================================================
+
+------------------------------------------------------------|
+SPRINT 1 — Syllabus & Calendar Foundation                   |
+Stories: US1, US2                                           | Sprint started: Dont do 
+------------------------------------------------------------|
+
+US1 — Syllabus PDF Upload 
+As a group member, I can upload a PDF of the syllabus so
+all group members can access it.
+
+Description:
+A single member of a group uploads the syllabus PDF once.
+The file is stored and immediately accessible by every
+member of the same group, with no re-upload needed.
+
+Acceptance Criteria:
+  [ ] Only authenticated users who belong to a group can upload a syllabus PDF
+  [ ] Uploaded PDF is stored and linked to the group, not just the individual user
+  [ ] All group members can view and download the PDF from a shared group space
+  [ ] If a syllabus already exists, the uploader is warned before overwriting
+  [ ] Upload is limited to PDF files with a max size of 20 MB
+  [ ] Upload confirmation notification is sent to all group members
+
+
+US2 — Automated Date Extraction & Calendar Population 
+As a group member, the syllabus PDF is automatically parsed
+and key dates are added to the calendar with recommended
+prep dates.
+
+Description:
+After a syllabus is uploaded, a background script parses the
+PDF, extracts all assignment due dates and exam dates, and
+populates the group calendar. The system also generates
+recommended start/prep dates for each item.
+
+Acceptance Criteria:
+  [ ] Parsing triggers automatically upon successful syllabus upload
+  [ ] Assignment due dates and exam dates are extracted and stored
+  [ ] Extracted dates are added to each group member's calendar view
+  [ ] A recommended preparation start date is calculated per item
+        (e.g. 7 days before exam, 3 days before assignment)
+  [ ] Each calendar event is labelled with the course name and item type
+        (exam, assignment, quiz)
+  [ ] Users are notified when their calendar has been populated
+  [ ] Unrecognised or ambiguous dates are flagged for manual review
+  [ ] Users can edit or remove any auto-generated calendar event
+
+
+------------------------------------------------------------
+SPRINT 2 — Study Sessions & Pomodoro
+Stories: US3, US7, BUG2
+------------------------------------------------------------
+
+US3 — Personal Pomodoro Study Session 
+As a user, I can start a personal study session with a
+Pomodoro timer and select the course I am studying for.
+
+Description:
+Users can launch a timed study session from their dashboard,
+pick a course, and use a Pomodoro-style timer (50 min work /
+10 min break) to track their study time (ALLOW custom time). Session time is
+recorded against the selected course.
+
+Acceptance Criteria:
+  [ ] User must select a course before starting a session
+  [ ] Default Pomodoro cycle is 25 min work / 5 min break
+  [ ] Timer displays countdown visually and plays an alert at
+        the end of each interval
+  [ ] User can pause or end the session early
+  [ ] Total study time is saved against the course on session end
+  [ ] Session history is accessible from the user's profile
+  [ ] Study time is used to calculate CCR reward points
+
+
+US7 — Collaborative Study Session with Shared Timer 
+As a user, I can start a collaborative study session with
+group members, with shared timer tracking so all participants
+earn points.
+
+Description:
+A user hosts a collaborative study session that group members
+can join. The shared timer tracks time for all active
+participants simultaneously. Points are awarded to each
+member based on their participation time.
+
+Acceptance Criteria:
+  [ ] Host can create a collaborative session and invite group members
+  [ ] Invited members receive a notification and can join with one click
+  [ ] A shared Pomodoro-style timer is visible to all participants in real time
+  [ ] Session only counts time while at least two members are active
+  [ ] Each member's individual time contribution is tracked separately
+  [ ] On session end, all participants who were present receive points
+        based on tracked time
+  [ ] 20+ hours of collaborative study across sessions awards 100 CCR
+        points per member
+  [ ] Session logs are saved and visible to all participants
+
+
+BUG2 — CCR Reward Points Not Populating in Rewards Section 
+All CCR reward points are correctly populated in the rewards
+section.
+
+Description:
+Points earned from all sources (study time, messages, surveys,
+calls, collaborative sessions) must be reflected in the rewards
+section in real time without requiring a page refresh.
+
+Acceptance Criteria:
+  [ ] Points update in the rewards section immediately after any
+        qualifying action
+  [ ] Each point source (study, messages, video calls, surveys) is
+        shown as a separate line item
+  [ ] Total points tally is always accurate across all categories
+  [ ] No duplicate points are awarded for the same qualifying event
+  [ ] Point history log is available for audit
+
+
+------------------------------------------------------------
+SPRINT 3 — Video Calls & Collaboration
+Stories: US6, BUG1
+------------------------------------------------------------
+
+US6 — Initiate Video Call (Zoom-Style)
+As a user, I can initiate a video call with group members
+in a Zoom-style interface.
+
+Description:
+Users can start or join a video call with their group
+directly within the platform. The call supports multiple
+participants with camera, microphone, and basic controls.
+
+Acceptance Criteria:
+  [ ] User can start a new call and share a link or notification
+        to group members
+  [ ] Group members can join with one click from a notification
+        or the group page
+  [ ] Call supports video, audio, and mute/camera-off controls
+        for each participant
+  [ ] Participant count and names are displayed during the call
+  [ ] Call ends when the host leaves or all participants disconnect
+  [ ] Call duration is recorded from start to when the last
+        participant leaves
+  [ ] Calls with all group members present for 60+ minutes are
+        eligible for CCR points
+
+
+BUG1 — Video Calls Not Being Tracked for CCR Points 
+Video calls are tracked so users can earn CCR points for
+qualifying calls.
+
+Description:
+Call data (duration, participants present, course association)
+must be reliably captured and fed into the points system.
+Calls not meeting the threshold should not trigger an award.
+
+Acceptance Criteria:
+  [ ] Call start time, end time, and participant list are logged
+        for every call
+  [ ] A call only qualifies if all group members were present for
+        the full 60+ minutes
+  [ ] The course the call is associated with must be selected or
+        confirmed before a call ends
+  [ ] Qualifying calls award 250 CCR points to each participating
+        member per course
+  [ ] Non-qualifying calls (too short or not all members present)
+        do not award points
+  [ ] Call log is visible to all group members in the group
+        activity feed
+
+
+------------------------------------------------------------|
+SPRINT 4 — Points, Rewards & Badges                         |
+Stories: US4, US5, BUG3, BUG4                               | Sprint Completed ✓
+------------------------------------------------------------|
+
+US4 — CCR Point Earning Rules
+As a user, I earn CCR points for study hours, messages,
+ratings, surveys, video calls, and collaborative study
+sessions.
+
+Description:
+The system tracks qualifying actions across the platform and
+awards CCR points accordingly. All thresholds must be met
+within the scope of a single course or semester as applicable.
+
+Point Rules:
+  - 100 hours studied per course        = 250 pts (per course)
+  - Sending 500+ messages               = 250 pts (platform-wide)
+  - End-of-semester rating 10/10        = 100 pts
+  - Completing 5 surveys                = 100 pts
+  - 10 video calls (60+ min, all members present)
+                                        = 250 pts per member per course
+  - 20 hours of collaborative study     = 100 pts per member present
+
+Acceptance Criteria:
+  [ ] 100 hours studied per course awards 250 points for that course
+  [ ] Sending more than 500 messages awards 250 points
+  [ ] Receiving 10/10 on all end-of-semester rating questions
+        awards 100 points
+  [ ] Completing 5 surveys awards 100 points
+  [ ] Completing 10 video calls of 60+ minutes with all group members
+        awards 250 points per member per course
+  [ ] 20 hours of collaborative study awards 100 points to each
+        member present
+  [ ] Points are tracked per course where applicable and globally
+        where specified
+  [ ] Points cannot be earned retroactively for actions before
+        the feature was enabled
+
+
+US5 — 1000-Point Reward System with Badges & CCR Credit Cap 
+As a user, I can earn up to 1000 CCR points per course with
+badges at 250-point milestones, with a maximum of 3 CCR
+credits (3000 points) per semester.
+
+Description:
+Each course has a 1000-point ceiling. Badges are awarded at
+250, 500, 750, and 1000 points. Across the semester, a
+maximum of 3 CCR credits can be earned (one per qualifying
+course), requiring 3000 total points.
+
+Badge Milestones (per course):
+  250 pts  — Badge 1
+  500 pts  — Badge 2
+  750 pts  — Badge 3
+  1000 pts — Badge 4 (CCR Credit Earned)
+
+Acceptance Criteria:
+  [ ] Points cap at 1000 per course — no further points earned beyond this
+  [ ] Badges are awarded automatically at 250, 500, 750, and 1000 points
+        per course
+  [ ] Each badge has a distinct name and visual icon
+  [ ] A maximum of 3 courses can qualify for CCR credits per semester
+        (3000 pts total)
+  [ ] The CCR credits section clearly shows progress across all
+        enrolled courses
+  [ ] Badges are displayed on the user's profile and visible to
+        group members
+  [ ] Semester reset clears progress for a new semester while
+        preserving badge history
+
+
+BUG3 — Progress Bar & Badge Section Missing on New Accounts 
+A progress bar showing 0/1000 points and a badges section
+appear on a user's profile immediately after account creation.
+
+Description:
+New users must see an empty but properly rendered rewards
+section from day one, with the progress bar and badge display
+area present even before any points are earned.
+
+Acceptance Criteria:
+  [ ] Progress bar displays 0/1000 on first login after account creation
+  [ ] Badge section is visible with placeholder slots for all 4 milestones
+  [ ] Profile page does not show an error or blank state in the
+        rewards section
+  [ ] Progress bar updates in real time as points are earned
+  [ ] Badge slots fill in with the correct badge icon when the
+        milestone is reached
+
+
+BUG4 — Group Members Cannot View Each Other's Points & Badges 
+Group members can view each other's profiles to see total
+points and all earned badges.
+
+Description:
+Any group member can navigate to another member's profile
+and see their current CCR point totals per course and any
+badges collected. This view is read-only.
+
+Acceptance Criteria:
+  [ ] Group members can access any other group member's profile
+        from the group page
+  [ ] The profile view shows points earned per course and total
+        semester points
+  [ ] All collected badges are displayed on the viewed profile
+  [ ] The profile view is read-only — viewers cannot modify
+        another user's data
+  [ ] Points and badges shown are always up to date at time of view
+  [ ] Users outside the group cannot access another user's profile
+
+
+      |===============================================|
+      |                    SUMMARY                    |                    
+      |===============================================|
+      |  Sprint 1 — Syllabus & Calendar Foundation    |
+      |  Sprint 2 — Study Sessions & Pomodoro         |
+      |  Sprint 3 — Video Calls & Collaboration       |
+      |  Sprint 4 — Points, Rewards & Badges          |
+      |===============================================|
