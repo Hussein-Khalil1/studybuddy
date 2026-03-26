@@ -68,7 +68,7 @@ Acceptance Criteria:
   [ ] User must select a course before starting a session
   [ ] Default Pomodoro cycle is 25 min work / 5 min break
   [ ] Timer displays countdown visually and plays an alert at
-        the end of each interval
+      the end of each interval
   [ ] User can pause or end the session early
   [ ] Total study time is saved against the course on session end
   [ ] Session history is accessible from the user's profile
