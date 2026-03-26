@@ -3,6 +3,7 @@ import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import { ChatBox } from "./ChatBox";
 import { SyllabusBar } from "./SyllabusBar";
+import CollaborativeSessionPanel from "./CollaborativeSessionPanel";
 
 type MemberRow = {
   user_id: string;
@@ -21,6 +22,43 @@ type MessageRow = {
   user_id: string;
   content: string;
   created_at: string;
+};
+
+type CollabSessionRow = {
+  id: number;
+  group_id: number;
+  course_id: number;
+  host_user_id: string;
+  work_minutes: number;
+  break_minutes: number;
+  current_phase: "work" | "break";
+  phase_started_at: string | null;
+  phase_duration_sec: number | null;
+  paused_remaining_sec: number | null;
+  is_running: boolean;
+  active_count: number;
+  started_at: string | null;
+};
+
+type CollabParticipantRow = {
+  user_id: string;
+  is_active: boolean;
+  total_eligible_seconds: number;
+  points_awarded: number;
+};
+
+type CollabInviteRow = {
+  id: number;
+  session_id: number;
+};
+
+type CollabSessionLogRow = {
+  id: number;
+  host_user_id: string;
+  started_at: string | null;
+  ended_at: string | null;
+  work_minutes: number;
+  break_minutes: number;
 };
 
 function parseNumericId(value: string) {
@@ -48,7 +86,17 @@ export default async function GroupPage({
 
   if (!user) redirect("/auth");
 
-  const [{ data: enrollment }, { data: myMembership }, { data: course }, { data: membersRaw }, { data: messagesRaw }, { data: syllabusRaw }] =
+  const [
+    { data: enrollment },
+    { data: myMembership },
+    { data: course },
+    { data: membersRaw },
+    { data: messagesRaw },
+    { data: syllabusRaw },
+    { data: activeSession },
+    { data: pendingInvite },
+    { data: sessionLogs },
+  ] =
     await Promise.all([
       supabase
         .from("course_enrollments")
@@ -82,7 +130,36 @@ export default async function GroupPage({
         .select("file_name, events_extracted, created_at, profiles!syllabi_uploaded_by_fkey(username)")
         .eq("group_id", groupId)
         .maybeSingle(),
+      supabase
+        .from("collab_sessions")
+        .select("id, group_id, course_id, host_user_id, work_minutes, break_minutes, current_phase, phase_started_at, phase_duration_sec, paused_remaining_sec, is_running, active_count, started_at")
+        .eq("group_id", groupId)
+        .eq("status", "active")
+        .maybeSingle<CollabSessionRow>(),
+      supabase
+        .from("collab_session_invites")
+        .select("id, session_id")
+        .eq("group_id", groupId)
+        .eq("target_user_id", user.id)
+        .eq("status", "pending")
+        .maybeSingle<CollabInviteRow>(),
+      supabase
+        .from("collab_sessions")
+        .select("id, host_user_id, started_at, ended_at, work_minutes, break_minutes")
+        .eq("group_id", groupId)
+        .eq("status", "ended")
+        .order("ended_at", { ascending: false })
+        .limit(10)
+        .returns<CollabSessionLogRow[]>(),
     ]);
+
+  const { data: participantsRaw } = activeSession
+    ? await supabase
+        .from("collab_session_participants")
+        .select("user_id, is_active, total_eligible_seconds, points_awarded")
+        .eq("session_id", activeSession.id)
+        .returns<CollabParticipantRow[]>()
+    : { data: [] as CollabParticipantRow[] };
 
   if (!enrollment || !myMembership || !course) {
     redirect(`/dashboard/course/${courseId}`);
@@ -166,6 +243,17 @@ export default async function GroupPage({
 
       {/* Syllabus bar */}
       <SyllabusBar groupId={groupId} courseId={courseId} existing={existingSyllabus} />
+
+      <CollaborativeSessionPanel
+        groupId={groupId}
+        courseId={courseId}
+        currentUserId={user.id}
+        members={members}
+        activeSession={activeSession ?? null}
+        participants={participantsRaw ?? []}
+        pendingInvite={pendingInvite ?? null}
+        sessionLogs={sessionLogs ?? []}
+      />
 
       {/* Chat — fills remaining height */}
       <ChatBox

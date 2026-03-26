@@ -3,6 +3,7 @@ import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import ProgressWidget from "./ProgressWidget";
 import MessagesWidget from "./MessagesWidget";
+import StudySessionWidget from "./StudySessionWidget";
 
 type ProfileRow = {
   username: string;
@@ -18,6 +19,11 @@ type CourseRow = {
   id: number;
   code: string;
   title: string;
+};
+
+type EnrollmentRow = {
+  course_id: number;
+  courses: CourseRow | CourseRow[];
 };
 
 type AssignmentRow = {
@@ -107,6 +113,21 @@ export default async function DashboardPage() {
   });
 
   const groupIds = myGroups.map((g) => g.group_id);
+
+  const { data: enrollmentRows } = await supabase
+    .from("course_enrollments")
+    .select("course_id, courses!inner(id, code, title)")
+    .eq("user_id", user.id)
+    .returns<EnrollmentRow[]>();
+
+  const enrolledCourses = (enrollmentRows ?? [])
+    .map((row) => {
+      const c = row.courses;
+      const course = Array.isArray(c) ? c[0] : c;
+      if (!course) return null;
+      return course;
+    })
+    .filter((course): course is CourseRow => Boolean(course));
 
   let assignmentRows: AssignmentRow[] | null = null;
   let progressRows: ProgressRow[] | null = null;
@@ -224,7 +245,10 @@ export default async function DashboardPage() {
         </p>
       </div>
 
-      {/* Empty state: no groups */}
+      <div className="space-y-6">
+        <StudySessionWidget courses={enrolledCourses} />
+
+        {/* Empty state: no groups */}
       {myGroups.length === 0 && (
         <div className="bg-white rounded-2xl border border-[rgba(0,0,0,0.07)] p-8 text-center">
           <div className="text-4xl mb-3">🎓</div>
@@ -263,6 +287,7 @@ export default async function DashboardPage() {
           </div>
         </div>
       )}
+      </div>
     </div>
   );
 }

@@ -1,6 +1,7 @@
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import NotificationActions from "./NotificationActions";
+import CollabInviteActions from "./CollabInviteActions";
 
 type RequestRow = {
   id: number;
@@ -9,6 +10,13 @@ type RequestRow = {
   created_at: string;
   updated_at: string;
   target_group_id: number | null;
+  profiles: { username: string } | { username: string }[] | null;
+  courses: { code: string; title: string } | { code: string; title: string }[] | null;
+};
+
+type CollabInviteRow = {
+  id: number;
+  created_at: string;
   profiles: { username: string } | { username: string }[] | null;
   courses: { code: string; title: string } | { code: string; title: string }[] | null;
 };
@@ -44,7 +52,7 @@ export default async function NotificationsPage() {
 
   if (!user) redirect("/auth");
 
-  const [{ data: incomingRaw }, { data: acceptedRaw }] = await Promise.all([
+  const [{ data: incomingRaw }, { data: acceptedRaw }, { data: collabInvitesRaw }] = await Promise.all([
     // Pending requests targeting this user (needs Accept/Decline)
     supabase
       .from("group_requests")
@@ -67,10 +75,18 @@ export default async function NotificationsPage() {
       .order("updated_at", { ascending: false })
       .limit(20)
       .returns<RequestRow[]>(),
+    supabase
+      .from("collab_session_invites")
+      .select("id, created_at, profiles!collab_session_invites_inviter_user_id_fkey(username), courses!collab_session_invites_course_id_fkey(code, title)")
+      .eq("target_user_id", user.id)
+      .eq("status", "pending")
+      .order("created_at", { ascending: false })
+      .returns<CollabInviteRow[]>(),
   ]);
 
   const incoming = incomingRaw ?? [];
   const accepted = acceptedRaw ?? [];
+  const collabInvites = collabInvitesRaw ?? [];
 
   return (
     <div className="p-6 sm:p-8 max-w-2xl mx-auto">
@@ -81,12 +97,53 @@ export default async function NotificationsPage() {
         <p className="text-sm text-[rgba(42,32,40,0.45)] mt-1">Group requests and invite updates</p>
       </div>
 
-      {incoming.length === 0 && accepted.length === 0 && (
+      {incoming.length === 0 && accepted.length === 0 && collabInvites.length === 0 && (
         <div className="bg-white rounded-2xl border border-[rgba(0,0,0,0.07)] p-10 text-center">
           <div className="text-4xl mb-3">🔔</div>
           <h2 className="text-base font-semibold text-[#2a2028] mb-1">All caught up</h2>
           <p className="text-sm text-[rgba(42,32,40,0.45)]">No new notifications right now.</p>
         </div>
+      )}
+
+      {collabInvites.length > 0 && (
+        <section className="mb-6">
+          <div className="flex items-center gap-2 mb-3">
+            <h2 className="text-sm font-semibold text-[#2a2028]">Collaborative session invites</h2>
+            <span className="px-2 py-0.5 rounded-full bg-gradient-to-r from-[#c2708a] to-[#9b6ba5] text-white text-xs font-bold">
+              {collabInvites.length}
+            </span>
+          </div>
+          <div className="space-y-3">
+            {collabInvites.map((invite) => {
+              const inviter = pickName(invite.profiles);
+              const course = pickCourse(invite.courses);
+              return (
+                <div
+                  key={invite.id}
+                  className="bg-white rounded-2xl border border-[rgba(194,112,138,0.2)] p-4 shadow-sm"
+                >
+                  <div className="flex items-start gap-3">
+                    <div className="w-9 h-9 rounded-full bg-gradient-to-br from-[#c2708a] to-[#9b6ba5] text-white flex items-center justify-center text-sm font-bold shrink-0">
+                      {inviter.charAt(0).toUpperCase()}
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <p className="text-sm text-[#2a2028]">
+                        <span className="font-semibold">{inviter}</span>
+                        {" invited you to a collaborative session for "}
+                        <span className="font-semibold text-[#c2708a]">{course.code || "a course"}</span>
+                      </p>
+                      {course.title && (
+                        <p className="text-xs text-[rgba(42,32,40,0.45)] mt-0.5 truncate">{course.title}</p>
+                      )}
+                      <p className="text-xs text-[rgba(42,32,40,0.35)] mt-1">{timeAgo(invite.created_at)}</p>
+                      <CollabInviteActions inviteId={invite.id} />
+                    </div>
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        </section>
       )}
 
       {/* Incoming — needs action */}
