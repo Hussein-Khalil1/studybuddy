@@ -20,7 +20,7 @@ const dmSans = DM_Sans({
 export const metadata: Metadata = {
   title: "StudyBuddy — Peer Learning, Reimagined",
   description:
-    "Auto-matched study groups, peer accountability, and friendly competition — built for UofT students.",
+    "Quick-matched study groups, peer accountability, and friendly competition — built for UofT students.",
 };
 
 export default function RootLayout({
