@@ -11,13 +11,25 @@ type ProfileRow = {
 type PointsRow = { course_id: number; points: number };
 type BadgeRow  = { course_id: number; badge_level: number };
 type EnrollRow = { course_id: number; courses: { id: number; code: string; title: string } | null };
+type StudySessionRow = {
+  id: number;
+  course_id: number;
+  work_minutes: number;
+  break_minutes: number;
+  total_work_minutes: number;
+  total_break_minutes: number;
+  points_awarded: number;
+  started_at: string;
+  ended_at: string;
+  courses: { code: string; title: string } | { code: string; title: string }[] | null;
+};
 
 export default async function ProfilePage() {
   const supabase = await createClient();
   const { data: { user } } = await supabase.auth.getUser();
   if (!user) redirect("/auth");
 
-  const [profileRes, enrollmentsRes, membershipsRes, pointsRes, badgesRes, enrollCoursesRes] =
+  const [profileRes, enrollmentsRes, membershipsRes, pointsRes, badgesRes, enrollCoursesRes, sessionsRes] =
     await Promise.all([
       supabase
         .from("profiles")
@@ -47,6 +59,13 @@ export default async function ProfilePage() {
         .select("course_id, courses(id, code, title)")
         .eq("user_id", user.id)
         .returns<EnrollRow[]>(),
+      supabase
+        .from("study_sessions")
+        .select("id, course_id, work_minutes, break_minutes, total_work_minutes, total_break_minutes, points_awarded, started_at, ended_at, courses(code, title)")
+        .eq("user_id", user.id)
+        .order("ended_at", { ascending: false })
+        .limit(10)
+        .returns<StudySessionRow[]>(),
     ]);
 
   const profile      = profileRes.data;
@@ -74,6 +93,16 @@ export default async function ProfilePage() {
   const semesterTotal = courses.reduce((sum, c) => sum + (pointsMap.get(c.id) ?? 0), 0);
   const ccrCredits    = courses.filter((c) => (pointsMap.get(c.id) ?? 0) >= 1000).length;
   const totalBadges   = [...badgesMap.values()].reduce((s, set) => s + set.size, 0);
+
+  const recentSessions = (sessionsRes.data ?? []).map((s) => {
+    const c = s.courses;
+    const course = Array.isArray(c) ? c[0] : c;
+    return {
+      ...s,
+      course_code: course?.code ?? "Course",
+      course_title: course?.title ?? "",
+    };
+  });
 
   return (
     <div className="p-6 sm:p-8 max-w-2xl mx-auto space-y-6">
@@ -121,6 +150,49 @@ export default async function ProfilePage() {
             <p className="text-xs text-[rgba(42,32,40,0.55)] mt-1 font-medium">{stat.label}</p>
           </div>
         ))}
+      </div>
+
+      {/* Study session history */}
+      <div className="bg-white rounded-2xl border border-[rgba(0,0,0,0.07)] p-5 shadow-sm">
+        <div className="flex items-center justify-between mb-4">
+          <p className="text-sm font-semibold text-[#2a2028]">Study Session History</p>
+          <span className="text-[10px] text-[rgba(42,32,40,0.4)]">Last 10 sessions</span>
+        </div>
+        {recentSessions.length === 0 ? (
+          <p className="text-xs text-[rgba(42,32,40,0.4)]">
+            No study sessions yet. Start a Pomodoro session from your dashboard.
+          </p>
+        ) : (
+          <div className="space-y-3">
+            {recentSessions.map((session) => (
+              <div
+                key={session.id}
+                className="flex items-center justify-between rounded-xl border border-[rgba(0,0,0,0.06)] px-4 py-3"
+              >
+                <div>
+                  <p className="text-xs font-semibold text-[#c2708a]">
+                    {session.course_code}
+                  </p>
+                  <p className="text-sm font-medium text-[#2a2028]">
+                    {session.total_work_minutes} min focus
+                  </p>
+                  <p className="text-[10px] text-[rgba(42,32,40,0.45)]">
+                    {new Date(session.ended_at).toLocaleDateString("en-US", {
+                      month: "short",
+                      day: "numeric",
+                      year: "numeric",
+                    })}{" "}
+                    · {session.work_minutes}/{session.break_minutes} min cycle
+                  </p>
+                </div>
+                <div className="text-right">
+                  <p className="text-sm font-bold text-[#2a2028]">+{session.points_awarded}</p>
+                  <p className="text-[10px] text-[rgba(42,32,40,0.45)]">pts</p>
+                </div>
+              </div>
+            ))}
+          </div>
+        )}
       </div>
 
       {/* ── Rewards summary ── */}
