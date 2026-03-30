@@ -277,7 +277,7 @@ export default function Home() {
           <span className={styles.gradientWord}>together.</span>
         </h1>
         <p className={styles.heroP}>
-          Auto-matched study groups, peer accountability, and friendly
+          Choose you study groups, peer accountability, and friendly
           competition — built for UofT students who want to do more than just
           get by.
         </p>
